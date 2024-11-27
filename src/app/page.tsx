@@ -1,101 +1,97 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
+import FileSelector from "./components/FileSelector";
+import tvFrame from "../../public/tvbackclean.webp";
+import staticFrame from "../../public/tvstatic.gif";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isTvOn, setIsTvOn] = useState(false);
+  const [showStatic, setShowStatic] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Turn the TV on
+  const turnTvOn = () => {
+    setIsTvOn(true); // Turn the TV on
+    setShowStatic(true); // Show the static frame
+
+    // After 2 seconds, hide the static frame and show content
+    setTimeout(() => {
+      setShowStatic(false);
+    }, 700);
+  };
+
+  // Turn the TV off
+  const turnTvOff = () => {
+    setIsTvOn(false); // Turn the TV off
+    setShowStatic(false); // Immediately hide static and content
+    setSelectedVideo(null); // Clear selected video
+  };
+
+  return (
+    <div className="h-[100dvh] w-full flex flex-col md:items-center justify-center p-12">
+      {isTvOn && (
+        <div
+          className="absolute h-full w-full opacity-20"
+          style={{
+            background: "radial-gradient(circle, black 60%, rgba(255, 255, 255, 0.8) 160%, white 100%)",
+          }}
+        ></div>
+      )}
+
+      <div className="relative" style={{ height: 500, width: 700 }}>
+        {/* TV Frame */}
+        <Image src={tvFrame} alt="Old TV" style={{ objectFit: "cover" }} />
+
+        {/* Screen Content */}
+        <div className="absolute top-[8%] left-[12%] w-[76%] h-[62%] border rounded-md flex items-center justify-center transition-all duration-500">
+          {isTvOn ? (
+            showStatic ? (
+              // Static frame displayed initially
+              <Image
+                className="w-full h-full opacity-100 transition-opacity duration-[2000ms] ease-out"
+                src={staticFrame}
+                alt="Static TV Frame"
+                style={{ objectFit: "cover" }}
+              />
+            ) : selectedVideo ? (
+              // Selected video player
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              // File selector when no video is selected
+              <FileSelector onVideoSelect={(videoId) => setSelectedVideo(videoId)} />
+            )
+          ) : (
+            // Black screen when TV is off
+            <div className="w-full h-full bg-black opacity-60"></div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Buttons */}
+        <div className="absolute top-[77%] w-[25.5%] left-[50%] translate-x-[-50%] h-6 rounded-md shadow-md flex flex-row items-center">
+          {isTvOn && (
+            <div
+              className="fixed left-[63.5%] bottom-[20%] w-3 h-3 rounded-full opacity-90"
+              style={{
+                background: "radial-gradient(circle, rgba(239, 68, 68, 1) 0%, black 100%)",
+              }}
+            ></div>
+          )}
+          <button
+            onClick={isTvOn ? turnTvOff : turnTvOn}
+            className="cursor-pointer text-transparent ml-auto h-8 w-7 flex items-center justify-center"
+          >
+            {isTvOn ? "Off" : "On"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
